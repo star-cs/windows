@@ -64,7 +64,7 @@ int main()
 	while (1)
 	{
 		SOCKET sockConn = accept(sockServ, (SOCKADDR*)&addrCli, &len);
-		char sendBuf[100] = { 0 };
+		char sendBuf[1024] = { 0 };
 
 		char ipString[INET_ADDRSTRLEN];
 		const char* ip = nullptr;
@@ -73,16 +73,17 @@ int main()
 
 		int iLen = send(sockConn, sendBuf, strlen(sendBuf) + 1, 0);
 
-		memset(sendBuf, 0, sizeof(sendBuf));
-		iLen = recv(sockConn, sendBuf, strlen(sendBuf) + 1, 0);
+		char recvBuf[1024] = { 0 };
+		iLen = recv(sockConn, recvBuf, sizeof(recvBuf), 0);
 		
-		printf("recv£º%s\n", sendBuf);
+		printf("recv£º%s\n", recvBuf);
+
 		closesocket(sockConn);
 	}
 
 
 	closesocket(sockServ);
-
+	WSACleanup();
 	system("pause");
 	return 0;
 }
