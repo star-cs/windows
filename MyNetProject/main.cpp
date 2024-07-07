@@ -64,7 +64,7 @@ int main()
 	while (1)
 	{
 		SOCKET sockConn = accept(sockServ, (SOCKADDR*)&addrCli, &len);
-		char sendBuf[100] = { 0 };
+		char sendBuf[1024] = { 0 };
 
 		char ipString[INET_ADDRSTRLEN];
 		const char* ip = nullptr;
@@ -73,8 +73,8 @@ int main()
 
 		int iLen = send(sockConn, sendBuf, strlen(sendBuf) + 1, 0);
 
-		memset(sendBuf, 0, sizeof(sendBuf));
-		iLen = recv(sockConn, sendBuf, strlen(sendBuf) + 1, 0);
+		char recvBuf[1024] = { 0 };
+		iLen = recv(sockConn, recvBuf, sizeof(recvBuf), 0);
 		
 		printf("recv£º%s\n", sendBuf);
 		closesocket(sockConn);
@@ -87,3 +87,32 @@ int main()
 	return 0;
 }
 
+int MySocketRecv0(int sock, char* buf, int dataSize)
+{
+	int numsRecvSoFar = 0;
+	int numsRecvTarget = dataSize;
+	while (1)
+	{
+		int bytesRead = recv(sock, &buf[numsRecvSoFar], numsRecvTarget, 0);
+
+		if (bytesRead == numsRecvTarget)
+		{
+			return 0;
+		}
+		else if (bytesRead > 0)
+		{
+			numsRecvSoFar += bytesRead;
+			numsRecvTarget -= bytesRead;
+			continue;
+		}
+		else if ((bytesRead < 0) && (errno == EAGAIN))
+		{
+			continue;
+		}
+		else
+		{
+			perror("recv");
+			return -1;
+		}
+	}
+}
