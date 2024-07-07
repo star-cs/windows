@@ -104,3 +104,53 @@ CreateEventW(
 
 ## WaitForSingleObject()请求事件对象。
 
+
+# 内核对象
+1. 内核对象
+Windows 中每个内核对象都只是一个内存块，它由操作系统内核分配，并只能由操作系统内核进行访问，应用程序不能在内存中定位这些数据结构并直接更改其内容。
+这个内存块是一个数据结构，其成员维护着与对象相关的信息。 
+少数成员(安全描述符和使用计数)是所有内核对象都有的，但大多数成员都是不同类型对象特有的。 
+CreateFile  
+如:file 文件对象、event 事件对象、process 进程、thread 线程、mutex 互斥量、iocompletationport 完成端口(windows 服务器)、mailslot 邮槽和 registry注册表等
+
+2. 内核对象的使用计数与生命期
+内核对象的所有者是操作系统内核，而非进程。换言之也就是说当进程退出，内核对象不一定会销毁。 
+操作系统内核通过内核对象的使用计数，知道当前有多少个进程正在使用一个特定的内核对象。 
+初次创建内核对象，使用计数为1。当另一个进程获得该内核对象的访问权之后，使用计数加1。 
+如果内核对象的使用计数递减为0，操作系统内核就会销毁该内核对象。
+也就是说内核对象在当前进程中创建，但是当前进程退出时，内核对象有可能被另外一个进程访问。
+这时，进程退出只会减少当前进程对引用的所有内核对象的使用计数，而不会减少其他进程对内核对象的使用计数(即使该内核对象由当前进程创建)。
+那么内核对象的使用计数未递减为0，操作系统内核不会销毁该内核对象。
+
+3. 操作内核对象
+Windows 提供了一组函数进行操作内核对象。成功调用一个创建内核对象的函数后，会返回一个句柄，它表示了所创建的内核对象，可由进程中的任何线程使用。
+在32 位进程中，句柄是一个32 位值，在 64 位进程中句柄是一个 64位值。我们可以使用唯一标识内核对象的句柄，调用内核操作函数对内核对象进行操作。
+
+4. 内核对象与其他类型的对象
+Windows 进程中除了内核对象还有其他类型的对象，比如窗口，菜单，字体等，这些属于用户对象和 GDI对象。
+要区分内核对象与非内核对象，最简单的方式就是查看创建这个对象的函数，几乎所有创建内核对象的函数都有一个允许我们指定安全属性的参数。
+
+5. CloseHandle 内核对象还没销毁，还可以通过 threadId 操作
+```C++
+DWORD WINAPI ThreadProc(LPVOID arg)
+{
+	printf("I am comming ... ");
+	while(1){}
+	return 0;
+}
+
+int test06()
+{
+	HANDLE hThread;
+	HANDLE headle2;
+	DWORD threadId;
+
+	hThread = CreateThread(NULL, 0, ThreadProc, NULL, 0, &threadId);
+	CloseHandle(hThread);	
+	headle2 = OpenThread(THREAD_QUERY_INFORMATION, FALSE, threadId);	//通过threadId返回句柄
+	headle2 = OpenThread(THREAD_QUERY_INFORMATION, FALSE, threadId);
+	headle2 = OpenThread(THREAD_QUERY_INFORMATION, FALSE, threadId);
+
+	return 0;
+}
+```

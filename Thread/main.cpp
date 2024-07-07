@@ -158,15 +158,38 @@ int test05()
 	return 0;
 }
 
+
+DWORD WINAPI ThreadProc(LPVOID arg)
+{
+	printf("I am comming ... ");
+	while(1){}
+	return 0;
+}
+
+int test06()
+{
+	HANDLE hThread;
+	HANDLE headle2;
+	DWORD threadId;
+
+	hThread = CreateThread(NULL, 0, ThreadProc, NULL, 0, &threadId);
+	CloseHandle(hThread);	
+	headle2 = OpenThread(THREAD_QUERY_INFORMATION, FALSE, threadId);	//Í¨¹ýthreadId·µ»Ø¾ä±ú
+	headle2 = OpenThread(THREAD_QUERY_INFORMATION, FALSE, threadId);
+	headle2 = OpenThread(THREAD_QUERY_INFORMATION, FALSE, threadId);
+
+	return 0;
+}
+
 int main()
 {
 	//test01();
-
 	//test02();
-
 	//test03();
+	//test05();
+	test06();
 
-	test05();
+
 	system("pause");
 	return 0;
 }
