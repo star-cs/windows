@@ -82,6 +82,7 @@ int main()
 
 
 	closesocket(sockServ);
+	WSACleanup();
 
 	system("pause");
 	return 0;
