@@ -22,6 +22,61 @@ CreateThread ºÍ _beginthreadex ¶¼ÊÇÓÃÀ´´´½¨Ïß³ÌµÄº¯Êý£¬µ«ËüÃÇ·Ö±ðÊôÓÚ²»Í¬µÄ¿âºÍ²
 
 ÔÚÏÖ´ú C++ ±à³ÌÖÐ£¬¸üÍÆ¼öÊ¹ÓÃ C++11 ±ê×¼¿âÖÐµÄ <thread>£¬ËüÌá¹©ÁË¸ü¸ß¼¶¡¢¸üÒ×ÓÚÊ¹ÓÃÇÒ¿çÆ½Ì¨µÄÏß³Ì¹ÜÀí½Ó¿Ú¡£
 
+# WaitForSingleObject
+WaitForSingleObject¿ÉÒÔÓÃÓÚµÈ´ý¸÷ÖÖÀàÐÍµÄÄÚºË¶ÔÏó£¬°üÀ¨µ«²»ÏÞÓÚ»¥³âÁ¿£¨Mutex£©¡¢ÊÂ¼þ£¨Event£©¡¢ÐÅºÅÁ¿£¨Semaphore£©ÒÔ¼°Ïß³ÌµÈ¡£
+
+WaitForSingleObject(
+    _In_ HANDLE hHandle,
+    _In_ DWORD dwMilliseconds
+    );
+
+# WaitForMultipleObjects
+WaitForMultipleObjects(
+		_In_ DWORD nCount,								¾ä±ú¸öÊý
+		_In_reads_(nCount) CONST HANDLE * lpHandles,	¾ä±úµÄ×é
+		_In_ BOOL bWaitAll,								TRUEµÈ´ýËùÓÐµÄÄÚºË¶ÔÏó£¬FALSEÈÎÒâÒ»¸öÄÚºË¶ÔÏó·¢³öÐÅºÅ
+		_In_ DWORD dwMilliseconds						µÈ´ýÊ±¼ä
+	);
+# Mutex
+## CreateMutex(NULL, FALSE, NULL)
+CreateMutexW(
+		_In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,	°²È«ÊôÐÔ
+		_In_ BOOL bInitialOwner,							»¥³â¶ÔÏóËùÓÐÕß£¬TRUEÁ¢¼´ÓµÓÐ»¥³âÌå
+		_In_opt_ LPCWSTR lpName								Ö¸Ïò»¥³â¶ÔÏóÃûµÄÖ¸ÕëÃû³Æ
+	);
+
+## ReleaseMutex()
+ReleaseMutex(
+    _In_ HANDLE hMutex
+    );
 
 
+# ÊÂ¼þ¶ÔÏó ÀàËÆÓÚ Ìõ¼þ±äÁ¿£¨pthread_cond_t£©
+
+## CreateEventW()
+CreateEventW(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,   //°²È«ÊôÐÔ NULL
+    _In_ BOOL bManualReset,                             //¸´Î»·½Ê½ TRUE ±ØÐëÓÃ ResetEventÊÖ¶¯¸´Ô­ FALSE ×Ô¶¯»¹Ô­ÎªÎÞÐÅºÅ×´Ì¬
+    _In_ BOOL bInitialState,                            //³õÊ¼×´Ì¬ TRUE ³õÊ¼×´Ì¬ÎªÓÐÐÅºÅ×´Ì¬ FALSEÎÞÐÅºÅ×´Ì¬
+    _In_opt_ LPCWSTR lpName                             //¶ÔÏóÃû³Æ NULLÎÞÃû
+    );
+
+ÊÖ¶¯ÖØÖÃÊÂ¼þ (Manual Reset Event)
+µ±Ò»¸öÊÖ¶¯ÖØÖÃÊÂ¼þ±»´¥·¢£¨Í¨¹ýSetEventº¯Êý£©£¬Ëü¿ÉÒÔ±£³ÖÔÚÐÅºÅ×´Ì¬£¬Ö±µ½Ä³¸öÏß³Ì»ò½ø³ÌÏÔÊ½µØµ÷ÓÃResetEventº¯Êý½«ÆäÖØÖÃ»ØÎ´´¥·¢×´Ì¬¡£ÕâÒâÎ¶×ÅÈç¹û¶à¸öÏß³Ì¶¼ÔÚµÈ´ýÍ¬Ò»¸öÊÖ¶¯ÖØÖÃÊÂ¼þ£¬Ò»µ©ÊÂ¼þ±»´¥·¢£¬ËùÓÐµÈ´ýµÄÏß³Ì¶¼½«±»»½ÐÑ£¬µ«ÊÂ¼þ»á±£³ÖÔÚ´¥·¢×´Ì¬£¬Ö±µ½±»ÊÖ¶¯ÖØÖÃ¡£
+
+×Ô¶¯ÖØÖÃÊÂ¼þ (Auto Reset Event)
+Ïà±ÈÖ®ÏÂ£¬µ±Ò»¸ö×Ô¶¯ÖØÖÃÊÂ¼þ±»´¥·¢ºó£¬ËüÖ»»á±£³ÖÔÚÐÅºÅ×´Ì¬Ö±µ½µÚÒ»¸öµÈ´ýËüµÄÏß³Ì±»»½ÐÑ£¬Ö®ºóÊÂ¼þ»á×Ô¶¯ÖØÖÃ»ØÎ´´¥·¢×´Ì¬¡£ÕâÒâÎ¶×ÅÈç¹û¶à¸öÏß³Ì¶¼ÔÚµÈ´ýÍ¬Ò»¸ö×Ô¶¯ÖØÖÃÊÂ¼þ£¬Ö»ÓÐµÚÒ»¸ö±»»½ÐÑµÄÏß³Ì»á¼ÌÐøÖ´ÐÐ£¬¶øÆäËûÏß³Ì½«¼ÌÐøµÈ´ý£¬Ö±µ½ÊÂ¼þÔÙ´Î±»´¥·¢¡£
+
+Ê¹ÓÃ³¡¾°£º
+- ÊÖ¶¯ÖØÖÃÊÂ¼þÍ¨³£ÓÃÓÚÐèÒª¶à¸öÏß³ÌÏìÓ¦Í¬Ò»ÊÂ¼þµÄÇé¿ö£¬±ÈÈçÒ»¸ö¹¤×÷Íê³ÉµÄ±êÖ¾£¬ËùÓÐµÈ´ý¹¤×÷µÄÏß³Ì¶¼ÐèÒª±»Í¨Öª¡£
+- ×Ô¶¯ÖØÖÃÊÂ¼þÍ¨³£ÓÃÓÚÐÅºÅÁ¿µÄ×÷ÓÃ£¬±ÈÈçÒ»¸ö¹¤×÷Íê³É£¬Ö»ÔÊÐíÒ»¸öµÈ´ýÏß³Ì¼ÌÐøÖ´ÐÐ£¬Íê³ÉºóÔÙµÈ´ýÏÂÒ»¸öÐÅºÅ¡£
+
+
+## SetEvent()   
+ÉèÖÃÎªÓÐÐÅºÅ×´Ì¬
+
+## ResetEvent()
+ÉèÖÃÎªÎÞÐÅºÅ×´Ì¬
+
+## WaitForSingleObject()ÇëÇóÊÂ¼þ¶ÔÏó¡£
 
