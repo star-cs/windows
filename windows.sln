@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UDP", "UDP\UDP.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UDP_Client", "UDP_Client\UDP_Client.vcxproj", "{7C0EF8DF-A47A-48B1-80F2-61943A614E44}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcxproj", "{B04F9132-6CD4-426E-9115-80C092C97B15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{7C0EF8DF-A47A-48B1-80F2-61943A614E44}.Release|x64.Build.0 = Release|x64
 		{7C0EF8DF-A47A-48B1-80F2-61943A614E44}.Release|x86.ActiveCfg = Release|Win32
 		{7C0EF8DF-A47A-48B1-80F2-61943A614E44}.Release|x86.Build.0 = Release|Win32
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Debug|x64.ActiveCfg = Debug|x64
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Debug|x64.Build.0 = Debug|x64
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Debug|x86.ActiveCfg = Debug|Win32
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Debug|x86.Build.0 = Debug|Win32
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Release|x64.ActiveCfg = Release|x64
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Release|x64.Build.0 = Release|x64
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Release|x86.ActiveCfg = Release|Win32
+		{B04F9132-6CD4-426E-9115-80C092C97B15}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
