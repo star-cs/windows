@@ -29,25 +29,25 @@ unsigned WINAPI threadInc(void* arg)
 	return 0;
 }
 
-int main()
+int test01()
 {
-	
 	//_In_opt_  void* _Security,							
 	//	_In_      unsigned                 _StackSize,		
 	//	_In_      _beginthreadex_proc_type _StartAddress,	
 	//	_In_opt_  void* _ArgList,							
 	//	_In_      unsigned                 _InitFlag,
 	//	_Out_opt_ unsigned* _ThrdAddr
-	
-	
-#if 0
-	int num = 100;
-	int id;
-	hThread = (HANDLE)_beginthreadex(NULL, 0, &fun, (void*)&num, 0, &id);
-	//_beginthreadex(NULL, 0, &fun, (void*)&num, 0, &tid);
-	//_beginthreadex(NULL, 0, &fun, (void*)&num, 0, &tid);
 
-#elif 0
+	int num = 100;
+	unsigned int id;
+	HANDLE hThread = (HANDLE)_beginthreadex(NULL, 0, &fun, (void*)&num, 0, &id);
+	//_beginthreadex(NULL, 0, &fun, (void*)&num, 0, &tid);
+	//_beginthreadex(NULL, 0, &fun, (void*)&num, 0, &tid);
+	return 0;
+}
+
+int test02() 
+{
 	int num = 100;
 	HANDLE hThread;
 	DWORD dwThreadID;
@@ -62,8 +62,11 @@ int main()
 	}
 
 	CloseHandle(hThread);
+	return 0;
+}
 
-#elif 0
+int test03()
+{
 	/*WaitForMultipleObjects(
 		_In_ DWORD nCount,								句柄个数
 		_In_reads_(nCount) CONST HANDLE * lpHandles,	句柄的组
@@ -80,8 +83,11 @@ int main()
 	}
 
 	WaitForMultipleObjects(NUM_THREAD, tHandles, TRUE, INFINITE);
+	return 0;
+}
 
-#elif 0
+int test04()
+{
 	/*CreateMutexW(
 		_In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,	安全属性
 		_In_ BOOL bInitialOwner,							互斥对象所有者，TRUE立即拥有互斥体
@@ -91,16 +97,76 @@ int main()
 	/*CreateMutex();
 	WaitForSingleObject();
 	ReleaseMutex();*/
-
-#else
-	//事件对象
-	CreateEvent();
+	return 0;
+}
 
 
-#endif
+int num = 100;
+HANDLE hEvent;
+unsigned WINAPI SellTicketA(void* arg)
+{
+	while (1)
+	{
+		WaitForSingleObject(hEvent, INFINITE);
+		if (num > 0)
+		{
+			Sleep(10);
+			num--;
+			printf("A remain %d\n", num);
+		}
+		else
+			break;
+		SetEvent(hEvent);
+	}
+	return 0;
+}
+unsigned WINAPI SellTicketB(void* arg)
+{
+	while (1)
+	{
+		WaitForSingleObject(hEvent, INFINITE);
+		if (num > 0)
+		{
+			Sleep(10);
+			num--;
+			printf("B remain %d\n", num);
+		}
+		else
+			break;
+		SetEvent(hEvent);
+	}
+	return 0;
+}
 
+int test05()
+{
+	HANDLE hThread1, hThread2;
 
-	Sleep(5000);		//毫秒单位
+	hThread1 = (HANDLE)_beginthreadex(NULL, 0, SellTicketA, NULL, 0, NULL);
+	hThread2 = (HANDLE)_beginthreadex(NULL, 0, SellTicketB, NULL, 0, NULL);
+
+	hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	SetEvent(hEvent);
+
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, INFINITE);
+
+	ResetEvent(hEvent);
+
+	CloseHandle(hEvent);
+
+	return 0;
+}
+
+int main()
+{
+	//test01();
+
+	//test02();
+
+	//test03();
+
+	test05();
 	system("pause");
 	return 0;
 }

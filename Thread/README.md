@@ -20,7 +20,31 @@ CreateThread ºÍ _beginthreadex ¶¼ÊÇÓÃÀ´´´½¨Ïß³ÌµÄº¯Êý£¬µ«ËüÃÇ·Ö±ðÊôÓÚ²»Í¬µÄ¿âºÍ²
     Ïß³Ì¾Ö²¿´æ´¢£º_beginthreadex ±£Ö¤Ã¿¸öÏß³Ì¶¼ÓÐ×Ô¼ºµÄ CRT »·¾³£¬°üÀ¨Ïß³Ì¾Ö²¿µÄ´íÎóºÅºÍÆäËûÈ«¾Ö±äÁ¿£¬±ÜÃâÁË¶àÏß³Ì¼äµÄÊý¾Ý³åÍ»¡£
     µ÷ÓÃ½¨Òé£ºÔÚÊ¹ÓÃ Microsoft Visual C++ ±àÒëÆ÷Ê±£¬½¨ÒéÊ¹ÓÃ _beginthreadex ºÍ _endthreadex À´´´½¨ºÍ½áÊøÏß³Ì£¬ÒÔÈ·±£ÕýÈ·´¦Àí CRT ×ÊÔ´¡£
 
-ÔÚÏÖ´ú C++ ±à³ÌÖÐ£¬¸üÍÆ¼öÊ¹ÓÃ C++11 ±ê×¼¿âÖÐµÄ <thread>£¬ËüÌá¹©ÁË¸ü¸ß¼¶¡¢¸üÒ×ÓÚÊ¹ÓÃÇÒ¿çÆ½Ì¨µÄÏß³Ì¹ÜÀí½Ó¿Ú¡£
+Á½ÖÖº¯ÊýÔÚÏß³Ì»Øµ÷º¯ÊýÉèÖÃÉÏµÄÖ÷ÒªÇø±ð£º
+µ±Ê¹ÓÃCreateThread´´½¨Ïß³ÌÊ±£¬ÄãÐèÒªÌá¹©Ò»¸öÏß³ÌÈë¿Úµã£¨»Øµ÷º¯Êý£©£¬Õâ¸öº¯ÊýµÄÔ­ÐÍÓ¦¸ÃÈçÏÂ£º
+```c++
+DWORD WINAPI ThreadFunction(LPVOID lpParameter);
+```
+ÆäÖÐDWORD WINAPI±íÃ÷ÕâÊÇÒ»¸öÊ¹ÓÃstdcallµ÷ÓÃÔ¼¶¨µÄº¯Êý£¬·µ»ØÀàÐÍÎªDWORD£¬²ÎÊýÊÇÒ»¸öLPVOIDÀàÐÍ£¬´ú±í´«µÝ¸øÏß³ÌµÄ²ÎÊý¡£
+
+
+_beginthreadexÊÇMicrosoft Visual C++ÔËÐÐÊ±¿â£¨CRT£©Ìá¹©µÄÏß³Ì´´½¨º¯Êý£¬ËüÊµ¼ÊÉÏÊÇCreateThreadµÄÒ»¸ö·â×°£¬Ìá¹©ÁË¶îÍâµÄ¹¦ÄÜºÍ±ãÀûÐÔ¡£_beginthreadexº¯ÊýµÄ»Øµ÷º¯ÊýÔ­ÐÍ¸üÁé»î£¬¿ÉÒÔÊÇÈÎºÎ·µ»ØÀàÐÍºÍ²ÎÊýÁÐ±íµÄº¯Êý£¬ÒòÎªCRT»á´¦ÀíºÃ×ª»»ºÍ°ü×°µÄ¹¤×÷¡£ 
+_beginthreadexµÄ»Øµ÷º¯Êý²¢²»ÐèÒª×ñÑ­ÌØ¶¨µÄµ÷ÓÃÔ¼¶¨»ò·µ»ØÀàÐÍ£¬Äã¿ÉÒÔÏñÆÕÍ¨º¯ÊýÒ»Ñù¶¨ÒåËü£¬ÀýÈç£º
+```c++
+void MyThreadFunction(void* pParameter);
+```
+_beginthreadex»á×Ô¶¯µ÷ÓÃÒ»¸öÃûÎª_threadstartexµÄÄÚ²¿º¯Êý£¬¸Ãº¯Êý»á½ÓÊÕÄãµÄÏß³Ìº¯Êý×÷Îª²ÎÊý£¬²¢´¦Àí±ØÒªµÄÉÏÏÂÎÄÇÐ»»ºÍ³õÊ¼»¯¹¤×÷¡£
+ÆäËûÇø±ð
+
+³ýÁË»Øµ÷º¯ÊýµÄÉèÖÃÖ®Íâ£¬_beginthreadexºÍCreateThread»¹ÓÐÒÔÏÂÖ÷ÒªÇø±ð£º
+
+    _beginthreadex»áÔÚ¶ÑÉÏ·ÖÅäÒ»¸öÓëÏß³ÌÏà¹ØµÄÊý¾Ý¿é£¨_tiddata£©£¬ÓÃÓÚ±£´æÏß³ÌµÄ±¾µØÊý¾Ý£¬ÕâÓÐÖúÓÚÔÚÊ¹ÓÃCÔËÐÐÊ±¿âº¯ÊýÊ±±ÜÃâÏß³Ì¼äµÄ³åÍ»¡£
+    µ±Ê¹ÓÃ_beginthreadex´´½¨µÄÏß³Ì½áÊøÊ±£¬»á×Ô¶¯µ÷ÓÃ_exitthreadexº¯ÊýÀ´ÇåÀíÏß³ÌÊý¾Ý£¬±ÜÃâÄÚ´æÐ¹Â©¡£
+    CreateThread²»½øÐÐÉÏÊöµÄ×Ô¶¯¹ÜÀí£¬ÐèÒª³ÌÐòÔ±¸ü¼ÓÏ¸ÖÂµØ´¦ÀíÏß³ÌÉúÃüÖÜÆÚºÍ×ÊÔ´¹ÜÀí¡£
+
+×ÜµÄÀ´Ëµ£¬_beginthreadexÌá¹©ÁËÒ»¸ö¸ü¸ß¼¶±ðµÄ½Ó¿Ú£¬ÊÊÓÃÓÚÄÇÐ©Ê¹ÓÃVisual C++ÔËÐÐÊ±¿âµÄ³ÌÐò£¬¶øCreateThreadÔòÌá¹©ÁËÒ»¸ö¸üµ×²ãµÄ½Ó¿Ú£¬ÊÊÓÃÓÚÄÇÐ©ÐèÒªÖ±½Ó¿ØÖÆÏß³Ì´´½¨ºÍ¹ÜÀíµÄ³¡¾°¡£
+
+
 
 # WaitForSingleObject
 WaitForSingleObject¿ÉÒÔÓÃÓÚµÈ´ý¸÷ÖÖÀàÐÍµÄÄÚºË¶ÔÏó£¬°üÀ¨µ«²»ÏÞÓÚ»¥³âÁ¿£¨Mutex£©¡¢ÊÂ¼þ£¨Event£©¡¢ÐÅºÅÁ¿£¨Semaphore£©ÒÔ¼°Ïß³ÌµÈ¡£
