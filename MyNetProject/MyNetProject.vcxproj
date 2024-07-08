@@ -24,6 +24,7 @@
     <ProjectGuid>{ce3196b7-ff20-4939-bd56-6a712e3700d3}</ProjectGuid>
     <RootNamespace>MyNetProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>TCP</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
