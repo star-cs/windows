@@ -5,9 +5,9 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "windows", "windows\windows.vcxproj", "{02433C8C-5916-46A6-AD61-AB64BA2002BD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyNetProject", "MyNetProject\MyNetProject.vcxproj", "{CE3196B7-FF20-4939-BD56-6A712E3700D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP", "TCP\TCP.vcxproj", "{CE3196B7-FF20-4939-BD56-6A712E3700D3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyNetProject_TCPClient", "MyNetProject_TCPClient\MyNetProject_TCPClient.vcxproj", "{59969C8D-3A04-454E-9F13-18B87ED5E07C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP_Client", "TCP_Client\TCP_Client.vcxproj", "{59969C8D-3A04-454E-9F13-18B87ED5E07C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UDP", "UDP\UDP.vcxproj", "{3C8B76D6-F2C1-4B1A-8D3D-C98C983685E3}"
 EndProject
