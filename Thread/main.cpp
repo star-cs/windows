@@ -181,14 +181,61 @@ int test06()
 	return 0;
 }
 
+
+#include <semaphore>
+
+static HANDLE semOne;
+static HANDLE semTwo;
+
+unsigned WINAPI Read(void* arg)
+{
+	while (1)
+	{
+		WaitForSingleObject(semOne, INFINITE);
+		printf("Read\n");
+		ReleaseSemaphore(semTwo, 1, NULL);
+	}
+	return NULL;
+}
+
+unsigned WINAPI Accu(void* arg)
+{
+	while (1)
+	{
+		WaitForSingleObject(semTwo, INFINITE);
+		printf("Accu\n");
+		ReleaseSemaphore(semOne, 1, NULL);
+	}
+	
+	return NULL;
+}
+
+void test07()
+{
+	HANDLE hThread1 = nullptr, hThread2 = nullptr;
+	semOne = CreateSemaphore(NULL, 0, 1, NULL);
+	semTwo = CreateSemaphore(NULL, 1, 1, NULL);
+
+	hThread1 = (HANDLE)_beginthreadex(NULL, 0, Read, NULL, 0, NULL);
+	hThread1 = (HANDLE)_beginthreadex(NULL, 0, Accu, NULL, 0, NULL);
+
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, INFINITE);
+
+	CloseHandle(semOne);
+	CloseHandle(semTwo);
+
+	system("pause");
+}
+
 int main()
 {
 	//test01();
 	//test02();
 	//test03();
 	//test05();
-	test06();
-
+	//test06();
+	test07();
 
 	system("pause");
 	return 0;

@@ -31,6 +31,15 @@ DWORD WINAPI ThreadFunction(LPVOID lpParameter);
 _beginthreadex是Microsoft Visual C++运行时库（CRT）提供的线程创建函数，它实际上是CreateThread的一个封装，提供了额外的功能和便利性。_beginthreadex函数的回调函数原型更灵活，可以是任何返回类型和参数列表的函数，因为CRT会处理好转换和包装的工作。 
 _beginthreadex的回调函数并不需要遵循特定的调用约定或返回类型，你可以像普通函数一样定义它，例如：
 ```c++
+unsigned int __cdecl _beginthreadex(
+    void *security,
+    unsigned stack_size,
+    unsigned (__stdcall *start_address)(void *),
+    void *arglist,
+    unsigned initflag,
+    unsigned *thrdaddr
+);
+
 void MyThreadFunction(void* pParameter);
 ```
 _beginthreadex会自动调用一个名为_threadstartex的内部函数，该函数会接收你的线程函数作为参数，并处理必要的上下文切换和初始化工作。
@@ -157,3 +166,4 @@ int test06()
 
 
 # 信号量
+## Crea
