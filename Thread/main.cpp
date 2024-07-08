@@ -120,6 +120,7 @@ unsigned WINAPI SellTicketA(void* arg)
 	}
 	return 0;
 }
+
 unsigned WINAPI SellTicketB(void* arg)
 {
 	while (1)
@@ -189,7 +190,7 @@ static HANDLE semTwo;
 
 unsigned WINAPI Read(void* arg)
 {
-	while (1)
+	for (int i = 0; i < 5; i++)
 	{
 		WaitForSingleObject(semOne, INFINITE);
 		printf("Read\n");
@@ -200,25 +201,23 @@ unsigned WINAPI Read(void* arg)
 
 unsigned WINAPI Accu(void* arg)
 {
-	while (1)
+	for (int i = 0; i < 5; i++)
 	{
 		WaitForSingleObject(semTwo, INFINITE);
 		printf("Accu\n");
 		ReleaseSemaphore(semOne, 1, NULL);
 	}
-	
 	return NULL;
 }
 
 void test07()
 {
 	HANDLE hThread1 = nullptr, hThread2 = nullptr;
-	semOne = CreateSemaphore(NULL, 0, 1, NULL);
-	semTwo = CreateSemaphore(NULL, 1, 1, NULL);
+	semOne = CreateSemaphore(NULL, 0, 2, NULL);
+	semTwo = CreateSemaphore(NULL, 2, 2, NULL);
 
 	hThread1 = (HANDLE)_beginthreadex(NULL, 0, Read, NULL, 0, NULL);
 	hThread1 = (HANDLE)_beginthreadex(NULL, 0, Accu, NULL, 0, NULL);
-
 	WaitForSingleObject(hThread1, INFINITE);
 	WaitForSingleObject(hThread2, INFINITE);
 
@@ -228,14 +227,75 @@ void test07()
 	system("pause");
 }
 
+
+int tot = 100;
+CRITICAL_SECTION g_cs;
+
+DWORD WINAPI SellA(void* arg)
+{
+	while (1)
+	{
+		EnterCriticalSection(&g_cs);
+		if (tot > 0)
+		{
+			Sleep(1);
+			tot--;
+			printf("A reamain %d\n", tot);
+			LeaveCriticalSection(&g_cs);
+		}
+		else
+		{
+			LeaveCriticalSection(&g_cs);
+			break;
+		}
+	}
+	return 0;
+}
+
+DWORD WINAPI SellB(void* arg)
+{
+	while (1)
+	{
+		EnterCriticalSection(&g_cs);
+		if (tot > 0)
+		{
+			Sleep(1);
+			tot--;
+			printf("B reamain %d\n", tot);
+			LeaveCriticalSection(&g_cs);
+		}
+		else
+		{
+			LeaveCriticalSection(&g_cs);
+			break;
+		}
+	}
+	return 0;
+}
+
+void test08()
+{
+	HANDLE hThreadA, hThreadB;
+	hThreadA = CreateThread(NULL, 0, &SellA, NULL, 0, NULL);
+	hThreadB = CreateThread(NULL, 0, &SellB, NULL, 0, NULL);
+	CloseHandle(hThreadA);
+	CloseHandle(hThreadB);
+
+	InitializeCriticalSection(&g_cs);
+	Sleep(40000);
+	DeleteCriticalSection(&g_cs);
+}
+
+
 int main()
 {
 	//test01();
 	//test02();
 	//test03();
-	//test05();
+	//test057
 	//test06();
-	test07();
+	//test07();
+	test08();
 
 	system("pause");
 	return 0;

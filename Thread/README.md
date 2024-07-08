@@ -57,43 +57,61 @@ _beginthreadex会自动调用一个名为_threadstartex的内部函数，该函数会接收你的线程函
 
 # WaitForSingleObject
 WaitForSingleObject可以用于等待各种类型的内核对象，包括但不限于互斥量（Mutex）、事件（Event）、信号量（Semaphore）以及线程等。
-
+```C++
 WaitForSingleObject(
     _In_ HANDLE hHandle,
     _In_ DWORD dwMilliseconds
     );
-
+```
 # WaitForMultipleObjects
+```C++
 WaitForMultipleObjects(
 		_In_ DWORD nCount,								句柄个数
 		_In_reads_(nCount) CONST HANDLE * lpHandles,	句柄的组
 		_In_ BOOL bWaitAll,								TRUE等待所有的内核对象，FALSE任意一个内核对象发出信号
 		_In_ DWORD dwMilliseconds						等待时间
 	);
+```
+
 # Mutex
 ## CreateMutex(NULL, FALSE, NULL)
+```C++
+WINBASEAPI
+_Ret_maybenull_
+HANDLE
+WINAPI
 CreateMutexW(
 		_In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,	安全属性
 		_In_ BOOL bInitialOwner,							互斥对象所有者，TRUE立即拥有互斥体
 		_In_opt_ LPCWSTR lpName								指向互斥对象名的指针名称
 	);
+```
 
 ## ReleaseMutex()
+```C++
+WINBASEAPI
+BOOL
+WINAPI
 ReleaseMutex(
     _In_ HANDLE hMutex
     );
-
+```
 
 # 事件对象 类似于 条件变量（pthread_cond_t）
 
 ## CreateEventW()
+```C++
+WINBASEAPI
+_Ret_maybenull_
+HANDLE
+WINAPI
 CreateEventW(
     _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,   //安全属性 NULL
     _In_ BOOL bManualReset,                             //复位方式 TRUE 必须用 ResetEvent手动复原 FALSE 自动还原为无信号状态
     _In_ BOOL bInitialState,                            //初始状态 TRUE 初始状态为有信号状态 FALSE无信号状态
     _In_opt_ LPCWSTR lpName                             //对象名称 NULL无名
     );
-
+```
 手动重置事件 (Manual Reset Event)
 当一个手动重置事件被触发（通过SetEvent函数），它可以保持在信号状态，直到某个线程或进程显式地调用ResetEvent函数将其重置回未触发状态。这意味着如果多个线程都在等待同一个手动重置事件，一旦事件被触发，所有等待的线程都将被唤醒，但事件会保持在触发状态，直到被手动重置。
 
@@ -166,4 +184,105 @@ int test06()
 
 
 # 信号量
-## Crea
+## CreateSemaphore
+
+```c++
+WINBASEAPI
+HANDLE
+WINAPI
+CreateSemaphoreW(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSemaphoreAttributes,
+    _In_ LONG lInitialCount,                            //信号量对象的初始计数值
+    _In_ LONG lMaximumCount,                            //信号量对象的计数最大值
+    _In_opt_ LPCWSTR lpName
+    );
+
+```
+
+## ReleaseSemaphore
+```c++
+WINBASEAPI
+BOOL
+WINAPI
+ReleaseSemaphore(
+    _In_ HANDLE hSemaphore,
+    _In_ LONG lReleaseCount,
+    _Out_opt_ LPLONG lpPreviousCount
+    );
+```
+
+# 关键代码段（应用层）
+`CRITICAL_SECTION` 是 Windows 操作系统中用于实现轻量级互斥的一种数据结构，用于保护共享资源免受多线程环境下的并发访问。
+它主要在用户模式下提供快速的线程间同步机制，相比于其他同步原语（如互斥量、事件、条件变量等），`CRITICAL_SECTION` 的开销较小，因为它主要依赖于处理器提供的原子操作来实现。
+
+### 使用方法
+
+1. **初始化**：在使用前，必须先初始化 `CRITICAL_SECTION` 结构。这可以通过调用 `InitializeCriticalSection` 函数完成。
+
+2. **进入临界区**：当线程想要访问受保护的共享资源时，它需要调用 `EnterCriticalSection` 函数。这会使线程获得对 `CRITICAL_SECTION` 的所有权，从而阻止其他线程进入同一临界区。
+
+3. **离开临界区**：当线程完成对共享资源的操作后，它应调用 `LeaveCriticalSection` 函数释放对 `CRITICAL_SECTION` 的所有权，允许其他线程进入。
+
+4. **清理**：在不再需要 `CRITICAL_SECTION` 时，应调用 `DeleteCriticalSection` 函数来释放分配的资源。
+
+### 示例代码
+
+```cpp
+#include <windows.h>
+
+CRITICAL_SECTION g_criticalSection;
+
+void InitCriticalSection() {
+    InitializeCriticalSection(&g_criticalSection);
+}
+
+void EnterCS() {
+    EnterCriticalSection(&g_criticalSection);
+}
+
+void LeaveCS() {
+    LeaveCriticalSection(&g_criticalSection);
+}
+
+void CleanupCS() {
+    DeleteCriticalSection(&g_criticalSection);
+}
+
+int main() {
+    InitCriticalSection();
+
+    // 多线程环境下，每个线程在访问共享资源前需调用 EnterCS()
+    // 在访问结束后调用 LeaveCS()
+
+    CleanupCS();
+    return 0;
+}
+```
+
+### 注意事项
+
+- `CRITICAL_SECTION` 不是可重入的，这意味着线程不能在已经拥有 `CRITICAL_SECTION` 的情况下再次进入同一个 `CRITICAL_SECTION`。
+- 它不支持超时，如果一个线程试图进入已经被另一个线程持有的 `CRITICAL_SECTION`，那么该线程将一直等待直到获得所有权。
+- `CRITICAL_SECTION` 不是跨进程的，它只能在创建它的进程中使用，不能被其他进程中的线程访问。
+- 使用不当可能会导致死锁，因此在设计多线程应用时，需要仔细考虑同步策略。
+
+总的来说，`CRITICAL_SECTION` 是一种快速而简单的线程同步机制，适合用于保护短时间访问的共享资源，但在复杂或高性能的多线程应用中，可能需要考虑使用更高级的同步原语，如互斥量、条件变量等。
+
+
+# 各种线程同步的比较总结
+互斥Mutex，事件Event，关键代码段criticalSection，信号量Semaphore
+
+互斥Mutex，事件Event，信号量Semaphore 属于内核对象，速度慢，可以在多个进程中的各个线程间进行同步。
+
+关键代码段criticalSection在用户方式下，速度快。
+当时使用时，容易进入死锁状态，因为在等待进入关键代码段时无法设定超时值。
+只能在本进程。 
+
+通常，在编写多线程程序并需要实现线程同步时，首选关键代码段，
+由于它的使用比较简单如果是在 MFC程序中使用的话，可以在类的构造函数 Init,中调用 InitializeCriticalsection函数；
+在该类的析构函数中调用 DeleteCriticalSection 函数，
+在所需保护的代码前面调用EnterCriticalSection 函数，
+在访问完所需保护的资源后，调用 LeaveCriticalSection 函数。
+
+
+
