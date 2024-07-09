@@ -42,4 +42,12 @@ CreateProcessW(
 
     lpProcessInformation：指向PROCESS_INFORMATION结构的指针，用于接收新进程的信息，如进程ID和主线程ID。
 
-     
+# 进程间通信方式
+
+1 socket
+2 剪贴板
+3 邮槽    古老
+4 匿名管道
+5 命名管道
+6 Copy_data findwindows wm_copydata  消息 Sendmessage
+

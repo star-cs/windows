@@ -1,14 +1,14 @@
 #include <windows.h>
 #include <stdio.h>
 
-int main()
+void test_CreateProcess()
 {
     WINBASEAPI
         BOOL
         WINAPI
         CreateProcessW(
             _In_opt_ LPCWSTR lpApplicationName, //NULL
-            _Inout_opt_ LPWSTR lpCommandLine,   
+            _Inout_opt_ LPWSTR lpCommandLine,
             _In_opt_ LPSECURITY_ATTRIBUTES lpProcessAttributes,
             _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
             _In_ BOOL bInheritHandles,
@@ -61,6 +61,12 @@ int main()
     {
         printf("Create Failed bRet = %d£¬errorno = %d\n", bRet, GetLastError());
     }
+}
+
+
+int main()
+{
+    
 
     return 0;
 }
