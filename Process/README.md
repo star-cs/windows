@@ -1,4 +1,4 @@
-# 线程Process
+# 进程Process
 
 ## CreateProcess
 
@@ -46,7 +46,7 @@ CreateProcessW(
 
 1 socket
 2 剪贴板
-3 邮槽    古老
+3 邮槽
 4 匿名管道
 5 命名管道
 6 Copy_data findwindows wm_copydata  消息 Sendmessage

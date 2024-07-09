@@ -19,6 +19,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Process", "Process\Process.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Process_ClipBoard", "Process_ClipBoard\Process_ClipBoard.vcxproj", "{C4751876-1CC7-473D-8864-BA809F6D8803}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Process_Community", "Process_Community\Process_Community.vcxproj", "{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Process_Community_Client", "Process_Community_Client\Process_Community_Client.vcxproj", "{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +95,22 @@ Global
 		{C4751876-1CC7-473D-8864-BA809F6D8803}.Release|x64.Build.0 = Release|x64
 		{C4751876-1CC7-473D-8864-BA809F6D8803}.Release|x86.ActiveCfg = Release|Win32
 		{C4751876-1CC7-473D-8864-BA809F6D8803}.Release|x86.Build.0 = Release|Win32
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Debug|x64.ActiveCfg = Debug|x64
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Debug|x64.Build.0 = Debug|x64
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Debug|x86.ActiveCfg = Debug|Win32
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Debug|x86.Build.0 = Debug|Win32
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Release|x64.ActiveCfg = Release|x64
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Release|x64.Build.0 = Release|x64
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Release|x86.ActiveCfg = Release|Win32
+		{1895A5A1-FFE7-4BD1-AC93-EB5FB12B6E14}.Release|x86.Build.0 = Release|Win32
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Debug|x64.ActiveCfg = Debug|x64
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Debug|x64.Build.0 = Debug|x64
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Debug|x86.ActiveCfg = Debug|Win32
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Debug|x86.Build.0 = Debug|Win32
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Release|x64.ActiveCfg = Release|x64
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Release|x64.Build.0 = Release|x64
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Release|x86.ActiveCfg = Release|Win32
+		{1792DEB2-0EB7-4DDE-B564-DA98EADE497C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
