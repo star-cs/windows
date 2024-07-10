@@ -202,6 +202,7 @@ void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 	CloseHandle(hWritePipe);
 # endif
 
+#if 0
 	//命名管道
 	char szBuf[1024] = "Named Pipe Going From Client";
 	DWORD dwWriet;
@@ -212,6 +213,28 @@ void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 		return;
 	}
 	CloseHandle(hNamedPipe);
+#endif
+
+	//CopyData
+	CString strWindowsTitle = _T("服务端");
+	CString strMsg = _T("COPYDATA");
+	// 利用标题拿到句柄
+	HWND hWnd = ::FindWindow(NULL, strWindowsTitle.GetBuffer(0));
+
+	if (hWnd != NULL && IsWindow(hWnd))
+	{
+		//数据的封装
+		COPYDATASTRUCT cpd;
+		cpd.dwData = 0;
+		cpd.cbData = strMsg.GetLength() * sizeof(TCHAR);	//大小
+		cpd.lpData = (PVOID)strMsg.GetBuffer(0);			//指针
+
+		//AfxGetApp()->m_pMainWnd 是 MFC 中用于获取应用程序主窗口句柄的表达式 (数据来源)
+		//(LPARAM)&cpd: 这是 lParam 参数，它包含了一个指向 COPYDATASTRUCT 结构的指针。cpd 必须是 COPYDATASTRUCT 类型，它包含了数据的大小和数据本身。
+		::SendMessage(hWnd, WM_COPYDATA, (WPARAM)(AfxGetApp()->m_pMainWnd), (LPARAM)&cpd);
+	}
+	strWindowsTitle.ReleaseBuffer();
+	strMsg.ReleaseBuffer();
 
 }
 

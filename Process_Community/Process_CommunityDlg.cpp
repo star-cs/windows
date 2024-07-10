@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CProcessCommunityDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_RECV, &CProcessCommunityDlg::OnBnClickedButtonRecv)
 	ON_BN_CLICKED(IDC_CREATE_BTN, &CProcessCommunityDlg::OnBnClickedCreateBtn)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CProcessCommunityDlg::OnBnClickedButtonSend)
+	ON_WM_COPYDATA()
 END_MESSAGE_MAP()
 
 
@@ -206,6 +207,7 @@ void CProcessCommunityDlg::OnBnClickedButtonRecv()
 	MessageBox(szBuf);
 #endif
 
+#if 0
 	//命名管道
 	char szBuf[100] = { 0 };
 	DWORD dwRead;
@@ -218,6 +220,9 @@ void CProcessCommunityDlg::OnBnClickedButtonRecv()
 	}
 	MessageBox(szBuf);
 	CloseHandle(hNamedPipe);
+#endif
+
+
 }
 
 void CProcessCommunityDlg::OnBnClickedButtonSend()
@@ -372,3 +377,14 @@ void CProcessCommunityDlg::OnBnClickedCreateBtn()
 }
 
 
+BOOL CProcessCommunityDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
+{
+	//接收CopyData消息
+	LPCTSTR szText = (LPCTSTR)(pCopyDataStruct->lpData);
+	DWORD dwLength = (DWORD)pCopyDataStruct->cbData;
+	TCHAR szRecvText[1024] = { 0 };
+	memcpy(szRecvText, szText, dwLength);
+	//szRecvText 应该是消息文本，而 _T("Y") 应该是标题文本，MB_OK 则是消息框的按钮和样式标志
+	MessageBox(szRecvText, _T("Y"), MB_OK);
+	return CDialogEx::OnCopyData(pWnd, pCopyDataStruct);
+}

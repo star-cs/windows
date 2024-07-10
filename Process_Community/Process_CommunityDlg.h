@@ -35,4 +35,5 @@ public:
 	afx_msg void OnBnClickedButtonRecv();
 	afx_msg void OnBnClickedCreateBtn();
 	afx_msg void OnBnClickedButtonSend();
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 };
