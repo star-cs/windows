@@ -45,9 +45,17 @@ CreateProcessW(
 # 进程间通信方式
 
 1 socket
+
 2 剪贴板
+
 3 邮槽
+    有服务器和客户端概念
+
 4 匿名管道
-5 命名管道
+    父子进程之间的通信
+
+5 命名管道 
+    Socket 相似，支持网络之间不同进程的通信
+
 6 Copy_data findwindows wm_copydata  消息 Sendmessage
 

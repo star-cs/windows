@@ -66,6 +66,8 @@ BEGIN_MESSAGE_MAP(CProcessCommunityDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_RECV, &CProcessCommunityDlg::OnBnClickedButtonRecv)
+	ON_BN_CLICKED(IDC_CREATE_BTN, &CProcessCommunityDlg::OnBnClickedCreateBtn)
+	ON_BN_CLICKED(IDC_BUTTON_SEND, &CProcessCommunityDlg::OnBnClickedButtonSend)
 END_MESSAGE_MAP()
 
 
@@ -156,10 +158,12 @@ HCURSOR CProcessCommunityDlg::OnQueryDragIcon()
 
 
 
+HANDLE hReadPipe;
+HANDLE hWritePipe;
+
 void CProcessCommunityDlg::OnBnClickedButtonRecv()
 {
-	// TODO: 在此添加控件通知处理程序代码
-
+#if 0
 	// 邮槽
 	LPCTSTR szSlotName = TEXT("\\\\.\\mailslot\\Mymailslot");
 	HANDLE hSlot = CreateMailslot(szSlotName,
@@ -184,4 +188,94 @@ void CProcessCommunityDlg::OnBnClickedButtonRecv()
 
 	TRACE("#########dwRead = %d\n", dwRead);
 	MessageBox(szBuf);
+#endif
+	//匿名管道
+	char szBuf[100] = { 0 };
+	DWORD dwRead;
+	TRACE("Begin ReadFile");
+	if (!ReadFile(hReadPipe, szBuf, 100, &dwRead, NULL))
+	{
+		MessageBox(_T("读取数据失败"));
+		return;
+	}
+	TRACE("End PipeReadFile");
+	MessageBox(szBuf);
 }
+
+void CProcessCommunityDlg::OnBnClickedButtonSend()
+{
+	//匿名管道
+	char szBuf[1024] = "Unnamed Pipe Comming From Server";
+	DWORD dwRead;
+	if (!WriteFile(hWritePipe, szBuf, strlen(szBuf) + 1, &dwRead, NULL))
+	{
+		MessageBox("WriteFile Failed!!!");
+		CloseHandle(hWritePipe);
+	}
+	TRACE("End PipeWriteFile");
+}
+
+
+void CProcessCommunityDlg::OnBnClickedCreateBtn()
+{
+	
+	SECURITY_ATTRIBUTES sa;
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+
+	if (!CreatePipe(&hReadPipe, &hWritePipe, &sa, 0))
+	{
+		MessageBox(_T("匿名管道创建失败"));
+		return;
+	}
+
+	//创建子进程
+	STARTUPINFO strStartupInfo;
+	memset(&strStartupInfo, 0, sizeof(strStartupInfo));
+
+	strStartupInfo.cb = sizeof(strStartupInfo);
+	strStartupInfo.dwFlags = STARTF_USESTDHANDLES;
+	strStartupInfo.hStdInput = hReadPipe;
+	strStartupInfo.hStdOutput = hWritePipe;
+	strStartupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+
+	PROCESS_INFORMATION szProcessInformation;
+	memset(&szProcessInformation, 0, sizeof(szProcessInformation));
+
+	int iRet = CreateProcess(
+		_T("Process_Community_Client.exe"),
+		NULL,
+		NULL,
+		NULL,
+		TRUE,
+		0,
+		NULL,   
+		NULL,
+		&strStartupInfo,
+		&szProcessInformation
+	);
+
+	if (iRet)
+	{
+		CloseHandle(szProcessInformation.hProcess);
+		CloseHandle(szProcessInformation.hThread);
+		szProcessInformation.dwProcessId = 0;
+		szProcessInformation.dwThreadId = 0;
+		szProcessInformation.hThread = NULL;
+		szProcessInformation.hProcess = NULL;
+	}
+	else
+	{
+		CloseHandle(hReadPipe);
+		CloseHandle(hWritePipe);
+
+		hReadPipe = NULL;
+		hWritePipe = NULL;
+		
+		MessageBox(_T("创建子进程失败"));
+		return;
+	}
+}
+
+

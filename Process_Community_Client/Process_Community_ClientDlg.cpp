@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CProcessCommunityClientDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CProcessCommunityClientDlg::OnBnClickedButtonSend)
+	ON_BN_CLICKED(IDC_BUTTON_RECV, &CProcessCommunityClientDlg::OnBnClickedButtonRecv)
 END_MESSAGE_MAP()
 
 
@@ -154,12 +155,13 @@ HCURSOR CProcessCommunityClientDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+HANDLE hReadPipe;
+HANDLE hWritePipe;
 
 void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	//邮槽
+#if 0
 	LPCTSTR szSlotName = TEXT("\\\\.\\mailslot\\Mymailslot");
 	HANDLE hMailSlot = CreateFile(szSlotName, FILE_GENERIC_WRITE,
 		FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -180,4 +182,37 @@ void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 	}
 
 	CloseHandle(hMailSlot);
+#endif
+	//匿名管道
+	hWritePipe = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	char szBuf[1024] = "Unnamed Pipe Going From Client";
+	DWORD dwWriet;
+	if (!WriteFile(hWritePipe, szBuf, strlen(szBuf) + 1, &dwWriet, NULL))
+	{
+		MessageBox("WriteFile Failed!!!");
+		CloseHandle(hWritePipe);
+		return;
+	}
+	CloseHandle(hWritePipe);
+}
+
+
+void CProcessCommunityClientDlg::OnBnClickedButtonRecv()
+{
+	//匿名管道
+	hReadPipe = GetStdHandle(STD_INPUT_HANDLE);
+
+	char szBuf[1024] = { 0 };
+	DWORD dwRead;
+	if (!ReadFile(hReadPipe, szBuf, sizeof(szBuf), &dwRead, NULL))
+	{
+		MessageBox("ReadFile Failed!!!");
+		CloseHandle(hReadPipe);
+		return;
+	}
+	CloseHandle(hReadPipe);
+	MessageBox(szBuf);
+
+
 }
