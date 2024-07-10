@@ -67,6 +67,7 @@ BEGIN_MESSAGE_MAP(CProcessCommunityClientDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_SEND, &CProcessCommunityClientDlg::OnBnClickedButtonSend)
 	ON_BN_CLICKED(IDC_BUTTON_RECV, &CProcessCommunityClientDlg::OnBnClickedButtonRecv)
+	ON_BN_CLICKED(IDC_Conn_BUT, &CProcessCommunityClientDlg::OnBnClickedConnBut)
 END_MESSAGE_MAP()
 
 
@@ -157,11 +158,12 @@ HCURSOR CProcessCommunityClientDlg::OnQueryDragIcon()
 
 HANDLE hReadPipe;
 HANDLE hWritePipe;
+HANDLE hNamedPipe;
 
 void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 {
-	//邮槽
 #if 0
+	//邮槽
 	LPCTSTR szSlotName = TEXT("\\\\.\\mailslot\\Mymailslot");
 	HANDLE hMailSlot = CreateFile(szSlotName, FILE_GENERIC_WRITE,
 		FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -183,6 +185,9 @@ void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 
 	CloseHandle(hMailSlot);
 #endif
+
+
+#if 0
 	//匿名管道
 	hWritePipe = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -195,11 +200,25 @@ void CProcessCommunityClientDlg::OnBnClickedButtonSend()
 		return;
 	}
 	CloseHandle(hWritePipe);
+# endif
+
+	//命名管道
+	char szBuf[1024] = "Named Pipe Going From Client";
+	DWORD dwWriet;
+	if (!WriteFile(hNamedPipe, szBuf, strlen(szBuf) + 1, &dwWriet, NULL))
+	{
+		MessageBox("WriteFile Failed!!!");
+		CloseHandle(hNamedPipe);
+		return;
+	}
+	CloseHandle(hNamedPipe);
+
 }
 
 
 void CProcessCommunityClientDlg::OnBnClickedButtonRecv()
 {
+#if 0
 	//匿名管道
 	hReadPipe = GetStdHandle(STD_INPUT_HANDLE);
 
@@ -213,6 +232,42 @@ void CProcessCommunityClientDlg::OnBnClickedButtonRecv()
 	}
 	CloseHandle(hReadPipe);
 	MessageBox(szBuf);
+#endif
+
+	//命名管道
+	char szBuf[1024] = { 0 };
+	DWORD dwRead;
+	if (!ReadFile(hNamedPipe, szBuf, sizeof(szBuf), &dwRead, NULL))
+	{
+		MessageBox("ReadFile Failed!!!");
+		CloseHandle(hNamedPipe);
+		return;
+	}
+	CloseHandle(hNamedPipe);
+	MessageBox(szBuf);
+}
 
 
+void CProcessCommunityClientDlg::OnBnClickedConnBut()
+{
+	//连接命名管道
+	LPCTSTR szNamedPipeName = TEXT("\\\\.\\pipe\\myPipe");
+
+	if (0 == WaitNamedPipe(szNamedPipeName, NMPWAIT_WAIT_FOREVER))
+	{
+		MessageBox(_T("当前没有可以利用的管道"));
+		return;
+	}
+
+	hNamedPipe = CreateFile(szNamedPipeName, GENERIC_READ | GENERIC_WRITE,
+		0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hNamedPipe == INVALID_HANDLE_VALUE)
+	{
+		TRACE("CreateFile Failed with %d\n", GetLastError());
+		MessageBox(_T("打开命名管道失败！"));
+		hNamedPipe = NULL;
+		return;
+	}
+
+	
 }

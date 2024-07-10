@@ -160,6 +160,7 @@ HCURSOR CProcessCommunityDlg::OnQueryDragIcon()
 
 HANDLE hReadPipe;
 HANDLE hWritePipe;
+HANDLE hNamedPipe;
 
 void CProcessCommunityDlg::OnBnClickedButtonRecv()
 {
@@ -189,6 +190,8 @@ void CProcessCommunityDlg::OnBnClickedButtonRecv()
 	TRACE("#########dwRead = %d\n", dwRead);
 	MessageBox(szBuf);
 #endif
+
+#if 0
 	//匿名管道
 	char szBuf[100] = { 0 };
 	DWORD dwRead;
@@ -196,15 +199,31 @@ void CProcessCommunityDlg::OnBnClickedButtonRecv()
 	if (!ReadFile(hReadPipe, szBuf, 100, &dwRead, NULL))
 	{
 		MessageBox(_T("读取数据失败"));
+		CloseHandle(hNamedPipe);
 		return;
 	}
-	TRACE("End PipeReadFile");
+	CloseHandle(hNamedPipe);
 	MessageBox(szBuf);
+#endif
+
+	//命名管道
+	char szBuf[100] = { 0 };
+	DWORD dwRead;
+	TRACE("Begin ReadFile");
+	if (!ReadFile(hNamedPipe, szBuf, 100, &dwRead, NULL))
+	{
+		MessageBox(_T("读取数据失败"));
+		CloseHandle(hNamedPipe);
+		return;
+	}
+	MessageBox(szBuf);
+	CloseHandle(hNamedPipe);
 }
 
 void CProcessCommunityDlg::OnBnClickedButtonSend()
 {
 	//匿名管道
+#if 0
 	char szBuf[1024] = "Unnamed Pipe Comming From Server";
 	DWORD dwRead;
 	if (!WriteFile(hWritePipe, szBuf, strlen(szBuf) + 1, &dwRead, NULL))
@@ -212,13 +231,26 @@ void CProcessCommunityDlg::OnBnClickedButtonSend()
 		MessageBox("WriteFile Failed!!!");
 		CloseHandle(hWritePipe);
 	}
-	TRACE("End PipeWriteFile");
+
+#endif
+
+	//命名管道
+	char szBuf[1024] = "Named Pipe Comming From Server";
+	DWORD dwRead;
+	if (!WriteFile(hNamedPipe, szBuf, strlen(szBuf) + 1, &dwRead, NULL))
+	{
+		MessageBox("WriteFile Failed!!!");
+		CloseHandle(hNamedPipe);
+		return;
+	}
+	CloseHandle(hNamedPipe);
 }
 
 
 void CProcessCommunityDlg::OnBnClickedCreateBtn()
 {
-	
+#if 0
+	// 匿名管道
 	SECURITY_ATTRIBUTES sa;
 	sa.bInheritHandle = TRUE;
 	sa.lpSecurityDescriptor = NULL;
@@ -276,6 +308,67 @@ void CProcessCommunityDlg::OnBnClickedCreateBtn()
 		MessageBox(_T("创建子进程失败"));
 		return;
 	}
+#endif 
+
+	// 命名管道	服务端
+	LPCTSTR szPipeName = TEXT("\\\\.\\pipe\\myPipe"); //和邮槽类似
+	//PIPE_ACCESS_DUPLEX 全双工 ， FILE_FLAG_OVERLAPPED异步  的通信
+	hNamedPipe = CreateNamedPipe(szPipeName, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
+		PIPE_TYPE_BYTE, 1, 1024, 1024, 0, NULL);
+
+	if (hNamedPipe == INVALID_HANDLE_VALUE)
+	{
+		TRACE("CreateNamePipe failed with &d\n", GetLastError());
+		MessageBox(_T("创建命名管道失败"));
+		return;
+	}
+
+	//手动重置
+	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if (NULL == hEvent)
+	{
+		MessageBox(_T("创建事件失败"));
+		CloseHandle(hNamedPipe);
+		hNamedPipe = NULL;
+		return;
+	}
+
+	// 用于异步 I/O 操作的结构。
+	
+	/*OVERLAPPED结构体成员
+	Internal: 供系统使用的内部指针。
+	InternalHigh : 另一个供系统使用的内部指针。
+	Offset : 文件偏移量的低32位，用于异步文件操作。
+	OffsetHigh : 文件偏移量的高32位。
+	Pointer : 应用程序定义的指针，可以指向任何数据结构，如工作项的上下文信息。
+	hEvent : 一个事件句柄，I / O 完成时会被信号量设置。*/
+
+	OVERLAPPED ovlap;
+	ZeroMemory(&ovlap, sizeof(OVERFLOW));
+	ovlap.hEvent = hEvent;
+
+	if (!ConnectNamedPipe(hNamedPipe, &ovlap))
+	{
+		if (ERROR_IO_PENDING != GetLastError())
+		{
+			MessageBox(_T("等待客户端链接失败"));
+			CloseHandle(hNamedPipe);
+			CloseHandle(hEvent);
+			hNamedPipe = NULL;
+			hEvent = NULL;
+			return;
+		}
+	}
+	if (WaitForSingleObject(hEvent, INFINITE) == WAIT_FAILED)
+	{
+		MessageBox(_T("等待对象失败"));
+		CloseHandle(hNamedPipe);
+		CloseHandle(hEvent);
+		hNamedPipe = NULL;
+		hEvent = NULL;
+		return;
+	}
+
 }
 
 

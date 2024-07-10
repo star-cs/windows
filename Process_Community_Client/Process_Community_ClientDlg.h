@@ -35,4 +35,5 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonSend();
 	afx_msg void OnBnClickedButtonRecv();
+	afx_msg void OnBnClickedConnBut();
 };
